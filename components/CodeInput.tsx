@@ -9,7 +9,7 @@ export default function CodeInput() {
   return (
     <div className="w-full h-full bg-white dark:bg-gray-900 rounded-xl shadow-md p-4">
       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        Input Code
+        Code Input
       </label>
       <CodeEditor
         value={code}

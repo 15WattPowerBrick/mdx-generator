@@ -7,7 +7,7 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 async function generateWithGemini(prompt: string, systemInstruction: string) {
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "gemini-1.5-flash-8b",
       contents: prompt,
       config: {
         systemInstruction,
@@ -37,32 +37,23 @@ export async function POST(request: NextRequest) {
     }
 
     const prompt = `
-        Generate comprehensive documentation in MDX format for the following code:
-
         \`\`\`${language}
         ${code}
         \`\`\`
         `;
 
     const systemInstruction = `
-        The documentation must be in MDX format that is clear.
+        "You are a code documentation specialist. Your task is to take a given code snippet and generate comprehensive documentation for it in MDX format.
 
-        Important: there is no need to overexplain. Keep it concise and relevant.
-    
-        The documentation may include:
-        1. A concise title and description
-        2. Purpose and functionality explanation
-        3. Parameters/arguments breakdown
-        4. Return values/output explanation
-        5. Usage examples
-        6. Any key implementation details or algorithms
-        7. Edge cases and limitations
+        **Input:** A code snippet.
+        **Output:** MDX documentation including:
+        - A clear, concise purpose statement for the code.
+        - Detailed explanation of parameters (if any), including their types and descriptions.
+        - Description of the return value (if any), including its type and description.
+        - Usage examples with code blocks.
+        - Any important notes or considerations.
 
-        Format the response in clean MDX with appropriate headings, code blocks, and formatting.
-        Include the original code in a syntax-highlighted code block.
-        Use standard markdown features that are compatible with MDX.
-
-        
+        Ensure all code blocks within the MDX are properly formatted using fenced code blocks        
     `;
 
     const mdxContent = await generateWithGemini(prompt, systemInstruction);
