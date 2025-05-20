@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Copy, Code2, FileText } from "lucide-react";
 import { toast } from "sonner";
 import MdxPreview from "@/components/MdxPreview";
+import Hero from "@/components/Hero";
 
 export default function Home() {
   const [code, setCode] = useState("");
@@ -59,25 +60,10 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen w-full bg-gradient-to-br from-white to-blue-50 dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-white px-4 py-10">
-      <div className="max-w-6xl mx-auto space-y-12">
-        <header className="text-center space-y-4">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
-            Code Documentation Generator
-          </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-            Paste your code below and generate clean, MDX documentation in
-            seconds.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4 pt-4">
-            <Button className="px-6 py-2">Book a Demo</Button>
-            <Button variant="outline" className="px-6 py-2">
-              Talk to Sales
-            </Button>
-          </div>
-        </header>
-
-        <div className="grid gap-8 md:grid-cols-2">
+    <main className="min-h-screen w-full bg-gradient-to-br from-white to-blue-50 dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-white px-4 py-4 md:py-30">
+      <div className="max-w-7xl mx-auto space-y-12">
+        <Hero />
+        <div className="grid grid-cols-1 gap-6">
           <section className="space-y-4">
             <div className="flex justify-between items-center">
               <h2 className="text-xl font-semibold">Input Code</h2>
@@ -92,8 +78,8 @@ export default function Home() {
             </div>
             <div className="border rounded-lg p-2 bg-gray-100 dark:bg-gray-900">
               <textarea
-                className="font-mono text-sm w-full h-80 p-4 bg-transparent resize-none focus:outline-none"
-                placeholder="Paste your code here..."
+                className="font-mono text-sm w-full h-100 p-4 bg-transparent resize-none focus:outline-none"
+                placeholder="Paste your code snippet here..."
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 disabled={isGenerating}
@@ -143,12 +129,12 @@ export default function Home() {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="code" className="mt-2">
-                <div className="border rounded-lg p-4 bg-gray-100 dark:bg-gray-900 font-mono text-sm h-80 overflow-auto">
-                  {mdxOutput || "MDX output will appear here..."}
-                </div>
+                <pre className="border rounded-lg p-4 bg-gray-100 dark:bg-gray-900 font-mono text-sm whitespace-pre-wrap">
+                  <code>{mdxOutput || "MDX output will appear here..."}</code>
+                </pre>
               </TabsContent>
               <TabsContent value="preview" className="mt-2">
-                <div className="border rounded-lg p-4 h-80 overflow-auto prose dark:prose-invert max-w-none">
+                <div className="prose dark:prose-invert max-w-none">
                   <MdxPreview mdxSource={mdxOutput} />
                 </div>
               </TabsContent>

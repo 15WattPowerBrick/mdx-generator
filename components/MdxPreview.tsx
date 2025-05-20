@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { MDXRemote } from "next-mdx-remote";
 import { serialize } from "next-mdx-remote/serialize";
@@ -12,23 +14,14 @@ type MdxPreviewProps = {
 export default function MdxPreview({ mdxSource }: MdxPreviewProps) {
   const [compiledSource, setCompiledSource] =
     useState<MDXRemoteSerializeResult | null>(null);
-
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Function to preprocess MDX source to fix common AI-generated issues
   const preprocessMdx = (source: string): string => {
     if (!source) return "";
-
-    // Fix code blocks that might be incorrectly formatted
     let processed = source.replace(/```(mdx|markdown)?\s*\n/g, "```\n");
-
-    // Make sure code blocks are properly closed
     processed = processed.replace(/```\s*$/gm, "```\n");
-
-    // Make sure there's a space after heading markers
     processed = processed.replace(/^(#{1,6})([^#\s])/gm, "$1 $2");
-
     return processed;
   };
 
@@ -43,18 +36,12 @@ export default function MdxPreview({ mdxSource }: MdxPreviewProps) {
       setError(null);
 
       try {
-        // Preprocess the MDX to fix common issues
         const processedMdx = preprocessMdx(mdxSource);
-
-        // Process MDX on client-side
         const mdxCompiled = await serialize(processedMdx, {
           mdxOptions: {
             remarkPlugins: [remarkGfm],
-            // You can add rehype plugins here if needed
-            // rehypePlugins: [rehypePrism, rehypeSlug],
           },
         });
-
         setCompiledSource(mdxCompiled);
       } catch (err) {
         const error =
@@ -69,9 +56,30 @@ export default function MdxPreview({ mdxSource }: MdxPreviewProps) {
     compileMdx();
   }, [mdxSource]);
 
+  const components = {
+    h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
+      <h1 className="text-2xl font-semibold mb-4" {...props} />
+    ),
+    h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
+      <h2 className="text-xl font-semibold mt-6 mb-3" {...props} />
+    ),
+    code: (props: React.HTMLAttributes<HTMLElement>) => (
+      <code
+        className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded text-sm"
+        {...props}
+      />
+    ),
+    pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
+      <pre
+        className="p-4 rounded-md bg-gray-100 dark:bg-gray-800 overflow-x-auto text-sm my-4"
+        {...props}
+      />
+    ),
+  };
+
   if (!mdxSource) {
     return (
-      <div className="flex items-center justify-center h-full text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-center h-full p-4 text-gray-500 dark:text-gray-400 text-sm">
         Documentation preview will appear here...
       </div>
     );
@@ -79,9 +87,9 @@ export default function MdxPreview({ mdxSource }: MdxPreviewProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-500 dark:text-gray-400" />
-        <span className="ml-2 text-gray-500 dark:text-gray-400">
+      <div className="flex items-center justify-center h-full p-4">
+        <Loader2 className="h-5 w-5 animate-spin text-gray-500 dark:text-gray-400" />
+        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
           Rendering preview...
         </span>
       </div>
@@ -90,43 +98,21 @@ export default function MdxPreview({ mdxSource }: MdxPreviewProps) {
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-red-500">
+      <div className="flex flex-col items-center justify-center h-full text-red-600 p-4 text-sm">
         <p>Error rendering MDX: {error}</p>
-        <p className="text-sm mt-2">Displaying raw content instead:</p>
-        <pre className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 text-sm overflow-auto max-h-64 w-full rounded">
+        <p className="text-xs mt-2">Displaying raw content instead:</p>
+        <pre className="mt-4 p-4 bg-gray-100 dark:bg-gray-800 rounded w-full overflow-auto max-h-64 text-sm">
           {mdxSource}
         </pre>
       </div>
     );
   }
 
-  // Define custom components (optional)
-  const components = {
-    h1: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-      <h1 className="text-2xl font-bold mb-4" {...props} />
-    ),
-    h2: (props: React.HTMLAttributes<HTMLHeadingElement>) => (
-      <h2 className="text-xl font-bold mb-3 mt-6" {...props} />
-    ),
-    code: (props: React.HTMLAttributes<HTMLElement>) => (
-      <code
-        className="bg-gray-100 dark:bg-gray-800 px-1 py-0.5 rounded"
-        {...props}
-      />
-    ),
-    pre: (props: React.HTMLAttributes<HTMLPreElement>) => (
-      <pre
-        className="p-4 rounded-md bg-gray-100 dark:bg-gray-800 overflow-x-auto"
-        {...props}
-      />
-    ),
-  };
-
   return (
-    <article className="prose dark:prose-invert max-w-none">
+    <div className="prose dark:prose-invert max-w-none bg-white dark:bg-gray-900 rounded-xl shadow-md p-4">
       {compiledSource && (
         <MDXRemote {...compiledSource} components={components} />
       )}
-    </article>
+    </div>
   );
 }
