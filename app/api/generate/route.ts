@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
         `;
 
     const systemInstruction = `
-        "You are a code documentation specialist. Your task is to take a given code snippet and generate comprehensive documentation for it in MDX format.
+        "You are a code documentation specialist. Your task is to take a given code snippet and generate comprehensive documentation for it in MD format.
 
         **Input:** A code snippet.
         **Output:** MDX documentation including:
@@ -52,8 +52,9 @@ export async function POST(request: NextRequest) {
         - Description of the return value (if any), including its type and description.
         - Usage examples with code blocks.
         - Any important notes or considerations.
+        - Explain the code by breaking it down.
 
-        Ensure all code blocks within the MDX are properly formatted using fenced code blocks        
+        Ensure all code blocks within the MDX are properly formatted      
     `;
 
     const mdxContent = await generateWithGemini(prompt, systemInstruction);
